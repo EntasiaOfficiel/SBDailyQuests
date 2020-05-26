@@ -1,0 +1,10 @@
+name: SBQuest
+version: '1.0'
+author: Ichii
+description: Made with <3 by Ichii
+main: fr.entasia.sbquest.Main
+depend: [Libraries]
+
+commands:
+  openquestmenu:
+    description: UwU Command
