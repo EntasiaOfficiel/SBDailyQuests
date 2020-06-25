@@ -1,9 +1,9 @@
-package fr.entasia.sbquest.utils;
+package fr.entasia.sbquest;
 
-import fr.entasia.apis.TextUtils;
-import fr.entasia.sbquest.Main;
-import fr.entasia.sbquest.utils.quests.QuestMob;
-import fr.entasia.sbquest.utils.quests.QuestStruct;
+import fr.entasia.apis.utils.TextUtils;
+import fr.entasia.sbquest.utils.InvsManager;
+import fr.entasia.sbquest.utils.objs.QuestMob;
+import fr.entasia.sbquest.utils.objs.Quests;
 import fr.entasia.skycore.apis.BaseAPI;
 import fr.entasia.skycore.apis.BaseIsland;
 import fr.entasia.skycore.apis.CooManager;
@@ -17,21 +17,26 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
+import java.util.List;
 
-public class EventManager implements Listener {
+public class Listeners implements Listener {
 
-	public static HashMap<String, Integer> cache = new HashMap<>();
+	public static final int DAY = 24 * 60 * 60 * 1000;
 
-	public static final int day = 24 * 60 * 60 * 1000;
+	private static void msg(Player p){
+		p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 3.5f, 1.1f);
+		p.sendMessage("§3Tu veux une quête tu dit ?");
+	}
 
 	@EventHandler
 	public static void onEntityClick(PlayerInteractEntityEvent e) {
 		if (e.getHand() == EquipmentSlot.HAND) {
 			Entity entity = e.getRightClicked();
-			if (entity.getType() == EntityType.VILLAGER && entity.getName().equals("Bob")) {
+			if (entity.getType() == EntityType.VILLAGER && entity.getCustomName().equals("Bob")) {
 				e.setCancelled(true);
 
 				Player p = e.getPlayer();
@@ -40,37 +45,37 @@ public class EventManager implements Listener {
 				long timestamp = Main.main.getConfig().getLong("quests." + is.isid.str());
 				if (timestamp > 0) {
 					long tdone = System.currentTimeMillis() - timestamp;
-					if (tdone < day) {
-						p.sendMessage("§cTu as déjà fini une quête aujourd'hui ! Reviens dans "+ TextUtils.secondsToTime((int)(day-tdone)/1000));
+					if (tdone < DAY) {
+						p.sendMessage("§cTu as déjà fini une quête aujourd'hui ! Reviens dans " + TextUtils.secondsToTime((int) (DAY - tdone) / 1000));
 						p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
 						return;
 					} else Main.main.getConfig().set("quests." + is.isid.str(), null);
-
 				}
-				new BukkitRunnable() {
-					@Override
-					public void run() {
-						try {
-							int a = cache.getOrDefault(p.getName(), 0);
-							if (a == 0) {
-								cache.put(p.getName(), 1);
+				List<MetadataValue> data = p.getMetadata("quest");
+				if(data.size()==0) {
+					msg(p);
+					p.setMetadata("quest", new FixedMetadataValue(Main.main, 1));
+					new BukkitRunnable() {
+						@Override
+						public void run() {
+							try {
 								p.sendMessage("§3Hmmm... Laisse moi reflechir...");
 								p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 3.5f, 1.1f);
 								Thread.sleep(1500);
 								p.sendMessage("§3J'ai quelque chose pour toi !");
 								p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 3.5f, 1.1f);
 								Thread.sleep(1500);
-								cache.put(p.getName(), 2);
-							} else if (a == 1) return;
-							MenuManager.openQuestMenu(p);
-						} catch (InterruptedException ex) {
-							ex.printStackTrace();
+								p.setMetadata("quest", new FixedMetadataValue(Main.main, 2));
+								InvsManager.openQuestMenu(p);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 						}
-					}
-				}.runTaskLaterAsynchronously(Main.main, 30);
-
-				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 3.5f, 1.1f);
-				p.sendMessage("§3Tu veux une quête tu dit ?");
+					}.runTaskLaterAsynchronously(Main.main, 30);
+				}else if (data.get(0).asInt()==2){
+					msg(p);
+					InvsManager.openQuestMenu(p);
+				}
 			}
 		}
 	}
@@ -81,7 +86,7 @@ public class EventManager implements Listener {
 		if (e.getEntity().getKiller() == null) return;
 		Player killer = e.getEntity().getKiller();
 		if (Main.main.getConfig().getConfigurationSection("quests." + killer.getName()) != null) {
-			QuestStruct current_quest = QuestStruct.getByID(Main.main.getConfig().getInt("quests." + killer.getName() + ".id"));
+			Quests current_quest = Quests.getByID(Main.main.getConfig().getInt("quests." + killer.getName() + ".id"));
 			if(current_quest==null)return;
 			int i = 0;
 			for (QuestMob qm : current_quest.content.mobs) {

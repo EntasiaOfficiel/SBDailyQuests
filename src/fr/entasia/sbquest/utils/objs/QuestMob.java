@@ -1,4 +1,4 @@
-package fr.entasia.sbquest.utils.quests;
+package fr.entasia.sbquest.utils.objs;
 
 import org.bukkit.entity.EntityType;
 

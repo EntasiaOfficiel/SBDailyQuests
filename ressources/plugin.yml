@@ -6,5 +6,5 @@ main: fr.entasia.sbquest.Main
 depend: [Libraries]
 
 commands:
-  openquestmenu:
+  test:
     description: UwU Command

@@ -3,9 +3,10 @@ package fr.entasia.sbquest.utils;
 import fr.entasia.apis.menus.MenuClickEvent;
 import fr.entasia.apis.menus.MenuCreator;
 import fr.entasia.sbquest.Main;
-import fr.entasia.sbquest.utils.quests.QuestItem;
-import fr.entasia.sbquest.utils.quests.QuestMob;
-import fr.entasia.sbquest.utils.quests.QuestStruct;
+import fr.entasia.sbquest.Utils;
+import fr.entasia.sbquest.utils.objs.QuestItem;
+import fr.entasia.sbquest.utils.objs.QuestMob;
+import fr.entasia.sbquest.utils.objs.Quests;
 import fr.entasia.skycore.apis.BaseAPI;
 import fr.entasia.skycore.apis.BaseIsland;
 import fr.entasia.skycore.apis.CooManager;
@@ -20,7 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class MenuManager {
+public class InvsManager {
 
 	public static MenuCreator questMenu = new MenuCreator(null, null) {
 		@Override
@@ -29,7 +30,7 @@ public class MenuManager {
 			BaseIsland is = (BaseIsland) e.data;
 			if (e.slot == 0) {
 				if (Main.main.getConfig().getConfigurationSection("quests." + is.isid.str()) != null) { // si il a une quête
-					QuestStruct current_quest = QuestStruct.getByID(Main.main.getConfig().getInt("quests." + is.isid.str() + ".id"));
+					Quests current_quest = Quests.getByID(Main.main.getConfig().getInt("quests." + is.isid.str() + ".id"));
 					if (current_quest == null){
 						p.sendMessage("§cUne erreur est survenue ! (ID de quête invalide)");
 						return;
@@ -55,12 +56,11 @@ public class MenuManager {
 					int actual_number = Main.main.getConfig().getInt("quests." + is.isid.str() + ".items." + qitem_number);
 					Main.main.getConfig().set("quests." + is.isid.str() + ".items." + qitem_number, actual_number + iterator);
 					qitem_number++;
-					Main.main.saveConfig();
 					openQuestMenu(p);
 					}
 				}
 			} else if (e.slot == 4) {
-				QuestStruct current_quest = QuestStruct.getByID(Main.main.getConfig().getInt("quests." + is.isid.str() + ".id"));
+				Quests current_quest = Quests.getByID(Main.main.getConfig().getInt("quests." + is.isid.str() + ".id"));
 				if (current_quest == null){
 					p.sendMessage("§cUne erreur est survenue ! (ID de quête invalide)");
 					return;
@@ -102,7 +102,6 @@ public class MenuManager {
 				p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
 				Long timestamp = Main.main.getConfig().getLong("quests." + is.isid.str() + ".time");
 				Main.main.getConfig().set("quests." + is.isid.str(), timestamp);
-				Main.main.saveConfig();
 			}
 		}
 	};
@@ -111,73 +110,31 @@ public class MenuManager {
 
 		// CODE DE CHECK DE QUETE
 
-		boolean finished = false;
-		QuestStruct current_quest;
+		Quests current;
 		BaseIsland is = BaseAPI.getIsland(CooManager.getIslandID(p.getLocation()));
 		if(is==null){
 			p.sendMessage("§cUne erreur est survenue ! (No island)");
 			return;
+		}else if(is.getMember(p.getUniqueId())==null){
+			p.sendMessage("§cTu n'es pas membre de cette île !");
 		}
 
-		if (Main.main.getConfig().getConfigurationSection("quests."+p.getName()) == null) {
-			// Pas de quête
-			ArrayList<QuestStruct> a = new ArrayList<>();
-
-			long islevel = is.getLevel();
-
-
-			// on choisi une quête valide selon le lvl
-			for(QuestStruct qs : QuestStruct.values()){
-				if(islevel>=qs.minlevel&&islevel<=qs.maxlevel) a.add(qs);
-			}
-			current_quest = a.get((int) (Math.random() * a.size()));
-
-
-			// modification de la config
-			Main.main.getConfig().set("quests." + is.isid.str() +".id", current_quest.id);
-			Main.main.getConfig().set("quests." + is.isid.str() + ".time", System.currentTimeMillis());
-
-			for (int i=0;i<current_quest.content.items.size();i++) {
-				Main.main.getConfig().set("quests." + is.isid.str() + ".items." + i, 0);
-			}
-
-			for (int i=0;i<current_quest.content.mobs.size();i++) {
-				Main.main.getConfig().set("quests." + is.isid.str() + ".mobs." + i, 0);
-			}
-			Main.main.saveConfig();
-
-		} else {
-			if (Main.main.getConfig().getLong("quests." + is.isid.str() + ".time") < (System.currentTimeMillis() - (24 * 60 * 60 * 1000))) {
-				Main.main.getConfig().set("quests." + is.isid.str(), null);
-				Main.main.saveConfig();
-				openQuestMenu(p);
-				return;
-			}
-			current_quest = QuestStruct.getByID(Main.main.getConfig().getInt("quests."+p.getName()+".id"));
-			if (current_quest == null){
+		if(Main.main.getConfig().getConfigurationSection("quests."+p.getName()) == null) {
+			current = Utils.createQuest(is);
+		}else if (Main.main.getConfig().getLong("quests." + is.isid.str() + ".time") < (System.currentTimeMillis() - (24 * 60 * 60 * 1000))) {
+			current = Utils.createQuest(is);
+		}else{
+			current = Quests.getByID(Main.main.getConfig().getInt("quests."+p.getName()+".id"));
+			if (current == null){
 				p.sendMessage("§cUne erreur est survenue ! (ID de quête invalide)");
 				return;
 			}
-			int iterator = 0;
-			int task_number = 0;
-			int task_completed = 0;
-			for (QuestItem qitem: current_quest.content.items) {
-				if (qitem.number == Main.main.getConfig().getInt("quests." + is.isid.str() + ".items." + iterator)) task_completed++;
-				task_number++;
-				iterator++;
-			}
-			iterator = 0;
-			for (QuestMob qmob: current_quest.content.mobs) {
-				if (qmob.number == Main.main.getConfig().getInt("quests." + is.isid.str() + ".mobs." + iterator)) task_completed++;
-				task_number++;
-				iterator++;
-			}
-
-			finished = task_number == task_completed;
 		}
 
 		// Ouverture menu
 		Inventory inv = questMenu.createInv(3, "§cQuête Journalière", is);
+
+		boolean finished = true;
 
 		ItemStack item = new ItemStack(Material.PAPER);
 		ItemMeta meta = item.getItemMeta();
@@ -188,19 +145,24 @@ public class MenuManager {
 		int iterator = 0;
 
 		ConfigurationSection tcs = cs.getConfigurationSection("items");
-		for (QuestItem qitem : current_quest.content.items) {
-			String remaining;
+		String remaining;
+		for (QuestItem qitem : current.content.items) {
 			if ((qitem.number - tcs.getInt("" + iterator)) == 0) remaining = "(Complété ✔)";
-			else remaining = "(" + (qitem.number - tcs.getInt("" + iterator)) + " Restant)";
+			else{
+				finished = false;
+				remaining = "(" + (qitem.number - tcs.getInt("" + iterator)) + " Restant)";
+			}
 			lore.add("§8- Collecter " + qitem.number + " " + qitem.name + " " + remaining);
 			iterator++;
 		}
 		iterator = 0;
 		tcs = cs.getConfigurationSection("mobs");
-		for (QuestMob qmob: current_quest.content.mobs) {
-			String remaining;
+		for (QuestMob qmob: current.content.mobs) {
 			if ((qmob.number - tcs.getInt("" + iterator)) == 0) remaining = "(Complété ✔)";
-			else remaining = "(" + (qmob.number - tcs.getInt("" + iterator)) + " Restant)";
+			else{
+				finished = false;
+				remaining = "(" + (qmob.number - tcs.getInt("" + iterator)) + " Restant)";
+			}
 			lore.add("§8- Tuer " + qmob.number + " " + qmob.name + " " + remaining);
 			iterator++;
 		}

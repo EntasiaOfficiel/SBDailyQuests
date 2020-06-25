@@ -1,16 +1,16 @@
 package fr.entasia.sbquest;
 
-import fr.entasia.sbquest.commands.OpenQuestMenu;
-import fr.entasia.sbquest.utils.EventManager;
+import fr.entasia.sbquest.commands.TestCmd;
 import fr.entasia.sbquest.utils.SaveTask;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Random;
 
 public class Main extends JavaPlugin {
 
 
 	public static Main main;
-	public static final String CONFIGBASE = "quests";
+	public static Random r;
 
 	@Override
 	public void onEnable() {
@@ -18,20 +18,14 @@ public class Main extends JavaPlugin {
 
 			main = this;
 			getLogger().info("Activation du plugin en cours...");
-			new SaveTask().runTaskTimerAsynchronously(this,0, 20*60*2);
+			new SaveTask().runTaskTimerAsynchronously(this,0, 20*60*2); // 2m
 
-			getCommand("openquestmenu").setExecutor(new OpenQuestMenu());
-			getServer().getPluginManager().registerEvents(new EventManager(), this);
+			getCommand("test").setExecutor(new TestCmd());
+			getServer().getPluginManager().registerEvents(new Listeners(), this);
 
 			saveDefaultConfig();
 
 			getLogger().info("Activé !");
-
-			Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-				public void run() {
-					Main.main.saveConfig();
-				}
-			}, 20, 2400);
 		}catch(Exception e){
 			e.printStackTrace();
 			getLogger().severe("UNE ERREUR EST SURVENUE ! ARRET DU SERVEUR");

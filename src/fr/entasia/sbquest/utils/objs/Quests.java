@@ -1,4 +1,4 @@
-package fr.entasia.sbquest.utils.quests;
+package fr.entasia.sbquest.utils.objs;
 
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public enum QuestStruct {
+public enum Quests {
 	B(2, 100, 200,
 			new QuestContent()
 					.addItem(new QuestItem(Material.PAPER, 0, 234, "Papier"))
@@ -24,7 +24,7 @@ public enum QuestStruct {
 	public final QuestContent content;
 	public final QuestReward reward;
 
-	QuestStruct(int id, int minlevel, int maxlevel, QuestContent content, QuestReward reward){
+	Quests(int id, int minlevel, int maxlevel, QuestContent content, QuestReward reward){
 		this.id = id;
 		this.minlevel = minlevel;
 		this.maxlevel = maxlevel;
@@ -32,8 +32,8 @@ public enum QuestStruct {
 		this.reward = reward;
 	}
 
-	public static QuestStruct getByID(int id){
-		for(QuestStruct qs : values()){
+	public static Quests getByID(int id){
+		for(Quests qs : values()){
 			if(qs.id==id)return qs;
 		}
 		return null;
