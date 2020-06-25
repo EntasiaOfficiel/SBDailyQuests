@@ -1,5 +1,6 @@
 package fr.entasia.sbquests;
 
+import fr.entasia.errors.EntasiaException;
 import fr.entasia.sbquests.utils.objs.Quests;
 import fr.entasia.skycore.apis.BaseIsland;
 import org.bukkit.entity.Player;
@@ -19,7 +20,8 @@ public class Utils {
 		for(Quests qs : Quests.values()){
 			if(islevel>=qs.minlevel&&islevel<=qs.maxlevel) okQuests.add(qs);
 		}
-		if(okQuests.size()==0)p.sendMessage("§cErreur : aucune quête n'est disponible ! Contacte un membre du Staff !");
+		if(okQuests.size()==0)return null;
+
 		Quests current = okQuests.get(Main.r.nextInt(okQuests.size()));
 
 

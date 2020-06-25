@@ -29,36 +29,37 @@ public class InvsManager {
 			Player p = e.player;
 			BaseIsland is = (BaseIsland) e.data;
 			ConfigurationSection cs = Main.main.getConfig().getConfigurationSection("quests." + is.isid.str());
+			if(cs==null){
+				p.sendMessage("§cErreur lors du chargement de la quête !");
+				return;
+			}
 			if (e.slot == 0) {
-				if (cs != null) { // si il a une quête
-					Quests current_quest = Quests.getByID(cs.getInt("id"));
-					if (current_quest == null){
-						p.sendMessage("§cUne erreur est survenue ! (ID de quête invalide)");
-						return;
-					}
-					int qitem_number = 0;
-					for (QuestItem qitem : current_quest.content.items) {
-						int iterator = 0;
-						int max = (qitem.number - cs.getInt(".items." + qitem_number));
+				Quests current_quest = Quests.getByID(cs.getInt("id"));
+				if (current_quest == null){
+					p.sendMessage("§cUne erreur est survenue ! (ID de quête invalide)");
+					return;
+				}
+				int i = 0;
+				for (QuestItem qitem : current_quest.content.items) {
+					int needed = qitem.number - cs.getInt(".items." + i);
+					if(needed<=0)continue;
 
-						for (ItemStack item : p.getInventory().all(qitem.type).values()) {
-							if(item.getDurability()==qitem.meta){
-								int amount = item.getAmount();
-								if(item.getAmount()>max-iterator){
-									iterator+=max-iterator;
-									item.setAmount(amount-max);
-									break;
-								}else{
-									iterator+=amount;
-									item.setAmount(0);
-								}
+					for (ItemStack item : p.getInventory().all(qitem.type).values()) {
+						if(item.getDurability()==qitem.meta){
+							int amount = item.getAmount();
+							if(amount>needed){
+								item.setAmount(amount-needed);
+								needed=0;
+								break;
+							}else{
+								needed-=amount;
+								item.setAmount(0);
 							}
 						}
-					int actual_number = cs.getInt("items." + qitem_number);
-					cs.set("items." + qitem_number, actual_number + iterator);
-					qitem_number++;
-					openQuestMenu(p);
 					}
+				cs.set("items."+i, qitem.number-needed);
+				i++;
+				openQuestMenu(p);
 				}
 			} else if (e.slot == 4) {
 				Quests current_quest = Quests.getByID(cs.getInt("id"));
@@ -134,6 +135,11 @@ public class InvsManager {
 				return;
 			}
 		}
+		if (current == null){
+			p.sendMessage("§cErreur : aucune quête n'est disponible ! Contacte un membre du Staff ! (level "+is.getLevel()+")");
+			return;
+		}
+
 
 		// Ouverture menu
 		Inventory inv = questMenu.createInv(3, "§cQuête Journalière", is);
