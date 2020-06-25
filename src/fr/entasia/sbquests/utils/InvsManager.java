@@ -12,6 +12,7 @@ import fr.entasia.skycore.apis.BaseIsland;
 import fr.entasia.skycore.apis.CooManager;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -28,9 +29,10 @@ public class InvsManager {
 		public void onMenuClick(MenuClickEvent e) {
 			Player p = e.player;
 			BaseIsland is = (BaseIsland) e.data;
+			ConfigurationSection cs = Main.main.getConfig().getConfigurationSection("quests." + is.isid.str());
 			if (e.slot == 0) {
-				if (Main.main.getConfig().getConfigurationSection("quests." + is.isid.str()) != null) { // si il a une quête
-					Quests current_quest = Quests.getByID(Main.main.getConfig().getInt("quests." + is.isid.str() + ".id"));
+				if (cs != null) { // si il a une quête
+					Quests current_quest = Quests.getByID(cs.getInt("id"));
 					if (current_quest == null){
 						p.sendMessage("§cUne erreur est survenue ! (ID de quête invalide)");
 						return;
@@ -38,7 +40,7 @@ public class InvsManager {
 					int qitem_number = 0;
 					for (QuestItem qitem : current_quest.content.items) {
 						int iterator = 0;
-						int max = (qitem.number - Main.main.getConfig().getInt("quests." + is.isid.str() + ".items." + qitem_number));
+						int max = (qitem.number - cs.getInt(".items." + qitem_number));
 
 						for (ItemStack item : p.getInventory().all(qitem.type).values()) {
 							if(item.getDurability()==qitem.meta){
@@ -53,14 +55,14 @@ public class InvsManager {
 								}
 							}
 						}
-					int actual_number = Main.main.getConfig().getInt("quests." + is.isid.str() + ".items." + qitem_number);
-					Main.main.getConfig().set("quests." + is.isid.str() + ".items." + qitem_number, actual_number + iterator);
+					int actual_number = cs.getInt("items." + qitem_number);
+					cs.set("items." + qitem_number, actual_number + iterator);
 					qitem_number++;
 					openQuestMenu(p);
 					}
 				}
 			} else if (e.slot == 4) {
-				Quests current_quest = Quests.getByID(Main.main.getConfig().getInt("quests." + is.isid.str() + ".id"));
+				Quests current_quest = Quests.getByID(cs.getInt("id"));
 				if (current_quest == null){
 					p.sendMessage("§cUne erreur est survenue ! (ID de quête invalide)");
 					return;
@@ -100,7 +102,7 @@ public class InvsManager {
 				}
 				p.sendMessage(sb.toString());
 				p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
-				Long timestamp = Main.main.getConfig().getLong("quests." + is.isid.str() + ".time");
+				long timestamp = Main.main.getConfig().getLong("quests." + is.isid.str() + ".time");
 				Main.main.getConfig().set("quests." + is.isid.str(), timestamp);
 			}
 		}
