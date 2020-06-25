@@ -10,7 +10,7 @@ public class Main extends JavaPlugin {
 
 
 	public static Main main;
-	public static Random r;
+	public static Random r = new Random();
 
 	@Override
 	public void onEnable() {

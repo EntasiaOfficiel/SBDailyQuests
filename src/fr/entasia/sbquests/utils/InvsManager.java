@@ -12,7 +12,6 @@ import fr.entasia.skycore.apis.BaseIsland;
 import fr.entasia.skycore.apis.CooManager;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -124,10 +123,10 @@ public class InvsManager {
 		String id = is.isid.str();
 		ConfigurationSection cs = Main.main.getConfig().getConfigurationSection("quests." +id);
 		if(cs == null) {
-			current = Utils.createQuest(is, id);
+			current = Utils.createQuest(p, is, id);
 			cs = Main.main.getConfig().getConfigurationSection("quests." + id);
 		}else if (cs.getLong("time") < (System.currentTimeMillis() - (24 * 60 * 60 * 1000))) {
-			current = Utils.createQuest(is, id);
+			current = Utils.createQuest(p, is, id);
 		}else{
 			current = Quests.getByID(cs.getInt("id"));
 			if (current == null){

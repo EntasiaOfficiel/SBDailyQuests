@@ -2,13 +2,14 @@ package fr.entasia.sbquests;
 
 import fr.entasia.sbquests.utils.objs.Quests;
 import fr.entasia.skycore.apis.BaseIsland;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
 public class Utils {
 
 
-	public static Quests createQuest(BaseIsland is, String id){ // pass by reference :)
+	public static Quests createQuest(Player p, BaseIsland is, String id){ // pass by reference :)
 		ArrayList<Quests> okQuests = new ArrayList<>();
 
 		long islevel = is.getLevel();
@@ -18,6 +19,7 @@ public class Utils {
 		for(Quests qs : Quests.values()){
 			if(islevel>=qs.minlevel&&islevel<=qs.maxlevel) okQuests.add(qs);
 		}
+		if(okQuests.size()==0)p.sendMessage("§cErreur : aucune quête n'est disponible ! Contacte un membre du Staff !");
 		Quests current = okQuests.get(Main.r.nextInt(okQuests.size()));
 
 
