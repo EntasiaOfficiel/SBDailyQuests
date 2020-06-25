@@ -93,15 +93,14 @@ public class Listeners implements Listener {
 			if(current_quest==null)return;
 			int i = 0;
 			for (QuestMob qm : current_quest.content.mobs) {
-				if (Main.main.getConfig().getInt("quests." + id + ".mobs." + i) >= qm.number){
-					i++;
-					continue;
-				}
 				if (qm.type == entity.getType()) {
+					if (Main.main.getConfig().getInt("quests." + id + ".mobs." + i) >= qm.number)break;
 					ConfigurationSection cs = Main.main.getConfig().getConfigurationSection("quests." + id + ".mobs");
+
 					int mobs_number = cs.getInt(String.valueOf(i));
 					mobs_number++;
 					Main.main.getConfig().set("quests." + id + ".mobs." + i, mobs_number);
+
 					if (mobs_number == qm.number) {
 						killer.sendMessage("§2Félicitation, tu as tué §3" + qm.number + " " + qm.name + "§2, tu as fini un objectif pour ta quête d'île journaliere !");
 						killer.playSound(killer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 3.5f, 1.1f);

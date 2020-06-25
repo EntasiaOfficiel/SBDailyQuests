@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Utils {
 
 
-	public static Quests createQuest(BaseIsland is){
+	public static Quests createQuest(BaseIsland is, String id){ // pass by reference :)
 		ArrayList<Quests> okQuests = new ArrayList<>();
 
 		long islevel = is.getLevel();
@@ -22,15 +22,15 @@ public class Utils {
 
 
 		// modification de la config
-		Main.main.getConfig().set("quests." + is.isid.str() +".id", current.id);
-		Main.main.getConfig().set("quests." + is.isid.str() + ".time", System.currentTimeMillis());
+		Main.main.getConfig().set("quests." + id +".id", current.id);
+		Main.main.getConfig().set("quests." + id + ".time", System.currentTimeMillis());
 
 		for (int i=0;i<current.content.items.size();i++) {
-			Main.main.getConfig().set("quests." + is.isid.str() + ".items." + i, 0);
+			Main.main.getConfig().set("quests." + id + ".items." + i, 0);
 		}
 
 		for (int i=0;i<current.content.mobs.size();i++) {
-			Main.main.getConfig().set("quests." + is.isid.str() + ".mobs." + i, 0);
+			Main.main.getConfig().set("quests." + id + ".mobs." + i, 0);
 		}
 		return current;
 	}

@@ -119,12 +119,15 @@ public class InvsManager {
 			p.sendMessage("§cTu n'es pas membre de cette île !");
 		}
 
-		if(Main.main.getConfig().getConfigurationSection("quests."+p.getName()) == null) {
-			current = Utils.createQuest(is);
-		}else if (Main.main.getConfig().getLong("quests." + is.isid.str() + ".time") < (System.currentTimeMillis() - (24 * 60 * 60 * 1000))) {
-			current = Utils.createQuest(is);
+		String id = is.isid.str();
+		ConfigurationSection cs = Main.main.getConfig().getConfigurationSection("quests." +id);
+		if(cs == null) {
+			current = Utils.createQuest(is, id);
+			cs = Main.main.getConfig().getConfigurationSection("quests." + id);
+		}else if (cs.getLong("time") < (System.currentTimeMillis() - (24 * 60 * 60 * 1000))) {
+			current = Utils.createQuest(is, id);
 		}else{
-			current = Quests.getByID(Main.main.getConfig().getInt("quests."+p.getName()+".id"));
+			current = Quests.getByID(cs.getInt("id"));
 			if (current == null){
 				p.sendMessage("§cUne erreur est survenue ! (ID de quête invalide)");
 				return;
@@ -141,7 +144,6 @@ public class InvsManager {
 		meta.setDisplayName("§6Quête du jour");
 		ArrayList<String> lore = new ArrayList<>();
 		lore.add("§6Voici les taches à effectuer:");
-		ConfigurationSection cs = Main.main.getConfig().getConfigurationSection("quests." + is.isid.str() + ".");
 		int iterator = 0;
 
 		ConfigurationSection tcs = cs.getConfigurationSection("items");
