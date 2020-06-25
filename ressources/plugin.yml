@@ -4,7 +4,3 @@ author: Ichii
 description: Made with <3 by Ichii
 main: fr.entasia.sbquests.Main
 depend: [Libraries]
-
-commands:
-  test:
-    description: nonononono

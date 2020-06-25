@@ -1,6 +1,5 @@
 package fr.entasia.sbquests;
 
-import fr.entasia.sbquests.commands.TestCmd;
 import fr.entasia.sbquests.utils.SaveTask;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,7 +19,6 @@ public class Main extends JavaPlugin {
 			getLogger().info("Activation du plugin en cours...");
 			new SaveTask().runTaskTimerAsynchronously(this,0, 20*60*2); // 2m
 
-			getCommand("test").setExecutor(new TestCmd());
 			getServer().getPluginManager().registerEvents(new Listeners(), this);
 
 			saveDefaultConfig();
