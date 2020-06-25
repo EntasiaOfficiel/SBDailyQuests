@@ -34,9 +34,12 @@ public class Listeners implements Listener {
 
 	@EventHandler
 	public static void onEntityClick(PlayerInteractEntityEvent e) {
+		System.out.println(1);
 		if (e.getHand() == EquipmentSlot.HAND) {
+		System.out.println(2);
 			Entity entity = e.getRightClicked();
 			if (entity.getType() == EntityType.VILLAGER && entity.getCustomName().equals("Bob")) {
+		System.out.println(3);
 				e.setCancelled(true);
 
 				Player p = e.getPlayer();
@@ -44,6 +47,7 @@ public class Listeners implements Listener {
 
 				long timestamp = Main.main.getConfig().getLong("quests." + is.isid.str());
 				if (timestamp > 0) {
+		System.out.println(4);
 					long tdone = System.currentTimeMillis() - timestamp;
 					if (tdone < DAY) {
 						p.sendMessage("§cTu as déjà fini une quête aujourd'hui ! Reviens dans " + TextUtils.secondsToTime((int) (DAY - tdone) / 1000));
@@ -52,6 +56,7 @@ public class Listeners implements Listener {
 					} else Main.main.getConfig().set("quests." + is.isid.str(), null);
 				}
 				List<MetadataValue> data = p.getMetadata("quest");
+		System.out.println("SIZE="+data.size());
 				if(data.size()==0) {
 					msg(p);
 					p.setMetadata("quest", new FixedMetadataValue(Main.main, 1));

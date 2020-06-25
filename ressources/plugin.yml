@@ -2,9 +2,9 @@ name: SBQuest
 version: '1.0'
 author: Ichii
 description: Made with <3 by Ichii
-main: fr.entasia.sbquest.Main
+main: fr.entasia.sbquests.Main
 depend: [Libraries]
 
 commands:
   test:
-    description: UwU Command
+    description: nonononono
