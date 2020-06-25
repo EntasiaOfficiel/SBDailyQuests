@@ -1,6 +1,6 @@
-package fr.entasia.sbquest.commands;
+package fr.entasia.sbquests.commands;
 
-import fr.entasia.sbquest.utils.InvsManager;
+import fr.entasia.sbquests.utils.InvsManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

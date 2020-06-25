@@ -1,6 +1,6 @@
-package fr.entasia.sbquest;
+package fr.entasia.sbquests;
 
-import fr.entasia.sbquest.utils.objs.Quests;
+import fr.entasia.sbquests.utils.objs.Quests;
 import fr.entasia.skycore.apis.BaseIsland;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
-package fr.entasia.sbquest;
+package fr.entasia.sbquests;
 
-import fr.entasia.sbquest.commands.TestCmd;
-import fr.entasia.sbquest.utils.SaveTask;
+import fr.entasia.sbquests.commands.TestCmd;
+import fr.entasia.sbquests.utils.SaveTask;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Random;

@@ -1,12 +1,12 @@
-package fr.entasia.sbquest.utils;
+package fr.entasia.sbquests.utils;
 
 import fr.entasia.apis.menus.MenuClickEvent;
 import fr.entasia.apis.menus.MenuCreator;
-import fr.entasia.sbquest.Main;
-import fr.entasia.sbquest.Utils;
-import fr.entasia.sbquest.utils.objs.QuestItem;
-import fr.entasia.sbquest.utils.objs.QuestMob;
-import fr.entasia.sbquest.utils.objs.Quests;
+import fr.entasia.sbquests.Main;
+import fr.entasia.sbquests.Utils;
+import fr.entasia.sbquests.utils.objs.QuestItem;
+import fr.entasia.sbquests.utils.objs.QuestMob;
+import fr.entasia.sbquests.utils.objs.Quests;
 import fr.entasia.skycore.apis.BaseAPI;
 import fr.entasia.skycore.apis.BaseIsland;
 import fr.entasia.skycore.apis.CooManager;

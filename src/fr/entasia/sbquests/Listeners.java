@@ -1,9 +1,9 @@
-package fr.entasia.sbquest;
+package fr.entasia.sbquests;
 
 import fr.entasia.apis.utils.TextUtils;
-import fr.entasia.sbquest.utils.InvsManager;
-import fr.entasia.sbquest.utils.objs.QuestMob;
-import fr.entasia.sbquest.utils.objs.Quests;
+import fr.entasia.sbquests.utils.InvsManager;
+import fr.entasia.sbquests.utils.objs.QuestMob;
+import fr.entasia.sbquests.utils.objs.Quests;
 import fr.entasia.skycore.apis.BaseAPI;
 import fr.entasia.skycore.apis.BaseIsland;
 import fr.entasia.skycore.apis.CooManager;

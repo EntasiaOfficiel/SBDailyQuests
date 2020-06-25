@@ -1,6 +1,6 @@
-package fr.entasia.sbquest.utils;
+package fr.entasia.sbquests.utils;
 
-import fr.entasia.sbquest.Main;
+import fr.entasia.sbquests.Main;
 import org.bukkit.scheduler.BukkitRunnable;
 
 
