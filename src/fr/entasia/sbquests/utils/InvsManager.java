@@ -121,7 +121,7 @@ public class InvsManager {
 					}
 				}
 				p.sendMessage(sb.toString());
-				if(drop)p.sendMessage();
+				if(drop)p.sendMessage("§cTon inventaire n'avait assez de place, une partie de la récompense à été drop");
 				p.sendMessage("");
 				if (current_quest.reward.exp > 0) {
 					p.sendMessage("§6- §c"+current_quest.reward.exp+" §6Points d'expérience");
