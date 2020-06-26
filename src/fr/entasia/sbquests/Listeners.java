@@ -29,45 +29,45 @@ public class Listeners implements Listener {
 
 	@EventHandler
 	public static void onEntityClick(PlayerInteractEntityEvent e) {
-		if (e.getHand() == EquipmentSlot.HAND) {
-			Entity entity = e.getRightClicked();
-			if (entity.getType() == EntityType.VILLAGER && entity.getCustomName().equals("Bob")) {
-				e.setCancelled(true);
-
+		Entity entity = e.getRightClicked();
+		if (entity.getType() == EntityType.VILLAGER && entity.getCustomName().equals("Bob")) {
+			e.setCancelled(true);
+			if (e.getHand() == EquipmentSlot.HAND) {
 				Player p = e.getPlayer();
 				BaseIsland is = BaseAPI.getIsland(CooManager.getIslandID(p.getLocation()));
-
 				List<MetadataValue> data = p.getMetadata("quest");
 				if(data.size()==0) {
 					p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 3.5f, 1.1f);
 					p.sendMessage("§3Tu veux une quête tu dit ?");
 
 					long timestamp = Main.main.getConfig().getLong("quests." + is.isid.str());
-					if (timestamp == 0) {
-						p.setMetadata("quest", new FixedMetadataValue(Main.main, 1));
-						new BukkitRunnable() {
-							@Override
-							public void run() {
-								try {
-									p.sendMessage("§3Hmmm... Laisse moi reflechir...");
-									p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 3.5f, 1.1f);
-									Thread.sleep(1500);
-									p.sendMessage("§3J'ai quelque chose pour toi !");
-									p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 3.5f, 1.1f);
-									Thread.sleep(1500);
-									p.removeMetadata("quest", Main.main);
-									InvsManager.openQuestMenu(p);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								}
-							}
-						}.runTaskLaterAsynchronously(Main.main, 30);
-					}else{
-						long tdone = System.currentTimeMillis() - timestamp;
-						if (tdone < DAY) {
-							p.sendMessage("§cTu as déjà fini une quête aujourd'hui ! Reviens dans " + TextUtils.secondsToTime((int) (DAY - tdone) / 1000));
+					if (timestamp == 0) InvsManager.openQuestMenu(p);
+					else{
+						timestamp = System.currentTimeMillis() - timestamp;
+						if (timestamp < DAY) {
+							p.sendMessage("§cTu as déjà fini une quête aujourd'hui ! Reviens dans " + TextUtils.secondsToTime((int) (DAY - timestamp) / 1000));
 							p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-						} else Main.main.getConfig().set("quests." + is.isid.str(), null);
+						} else{
+							p.setMetadata("quest", new FixedMetadataValue(Main.main, 1));
+							new BukkitRunnable() {
+								@Override
+								public void run() {
+									try {
+										p.sendMessage("§3Hmmm... Laisse moi reflechir...");
+										p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 3.5f, 1.1f);
+										Thread.sleep(1500);
+										p.sendMessage("§3J'ai quelque chose pour toi !");
+										p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 3.5f, 1.1f);
+										Thread.sleep(1500);
+										p.removeMetadata("quest", Main.main);
+										InvsManager.openQuestMenu(p);
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									}
+								}
+							}.runTaskLaterAsynchronously(Main.main, 30);
+							Main.main.getConfig().set("quests." + is.isid.str(), null);
+						}
 					}
 				}
 			}

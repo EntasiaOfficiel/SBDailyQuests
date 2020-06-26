@@ -10,13 +10,12 @@ import java.util.HashMap;
 public enum Quests {
 	A(1, 0, 200,
 			new QuestContent()
-					.addItem(new QuestItem(Material.PAPER, 0, 234, "Truc"))
-					.addItem(new QuestItem(Material.SUGAR_CANE, 0, 66, "Cannes à Sucre"))
-					.addMob(new QuestMob(EntityType.COW, 35, "Vaches"))
-					.addMob(new QuestMob(EntityType.ZOMBIE, 10, "Zombies")),
-			new QuestReward(1000, 20000)
-					.addItem(new ItemStack(Material.DIAMOND, 23), "Diamants")
-					.addItem(new ItemStack(Material.GOLD_INGOT, 42), "Lingots d'Or")),
+					.addItem(new QuestItem(Material.PAPER, 0, 64, "Papier"))
+					.addItem(new QuestItem(Material.SUGAR_CANE, 0, 64, "Cannes à Sucre"))
+					.addMob(new QuestMob(EntityType.ZOMBIE, 5, "Zombies")),
+			new QuestReward(100, 2000)
+					.addItem(new ItemStack(Material.DIAMOND, 10), "Diamants")
+					.addItem(new ItemStack(Material.GOLD_INGOT, 20), "Lingots d'Or")),
 
 	B(2, 100, 200,
 			new QuestContent()
