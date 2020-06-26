@@ -154,10 +154,10 @@ public class InvsManager {
 		String id = is.isid.str();
 		ConfigurationSection cs = Main.main.getConfig().getConfigurationSection("quests." +id);
 		if(cs == null) {
-			current = Utils.createQuest(p, is, id);
+			current = Utils.createQuest(is, id);
 			cs = Main.main.getConfig().getConfigurationSection("quests." + id);
 		}else if (cs.getLong("time") < (System.currentTimeMillis() - (24 * 60 * 60 * 1000))) {
-			current = Utils.createQuest(p, is, id);
+			current = Utils.createQuest(is, id);
 		}else{
 			current = Quests.getByID(cs.getInt("id"));
 			if (current == null){

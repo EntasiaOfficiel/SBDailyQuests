@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Utils {
 
 
-	public static Quests createQuest(Player p, BaseIsland is, String id){ // pass by reference :)
+	public static Quests createQuest(BaseIsland is, String id){ // pass by reference :)
 		ArrayList<Quests> okQuests = new ArrayList<>();
 
 		long islevel = is.getLevel();
