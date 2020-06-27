@@ -30,7 +30,7 @@ public class Listeners implements Listener {
 	@EventHandler
 	public static void onEntityClick(PlayerInteractEntityEvent e) {
 		Entity entity = e.getRightClicked();
-		if (entity.getType() == EntityType.VILLAGER && entity.getCustomName().equals("Bob")) {
+		if (entity.getType() == EntityType.VILLAGER && "Bob".equals(entity.getCustomName())) {
 			e.setCancelled(true);
 			if (e.getHand() == EquipmentSlot.HAND) {
 				Player p = e.getPlayer();
