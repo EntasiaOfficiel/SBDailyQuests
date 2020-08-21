@@ -1,16 +1,13 @@
-package fr.entasia.sbquests.utils;
+package fr.entasia.sbquests;
 
 import fr.entasia.apis.menus.MenuClickEvent;
 import fr.entasia.apis.menus.MenuCreator;
 import fr.entasia.apis.utils.ItemUtils;
-import fr.entasia.sbquests.Main;
-import fr.entasia.sbquests.Utils;
-import fr.entasia.sbquests.utils.objs.QuestItem;
-import fr.entasia.sbquests.utils.objs.QuestMob;
-import fr.entasia.sbquests.utils.objs.Quests;
+import fr.entasia.sbquests.utils.QuestItem;
+import fr.entasia.sbquests.utils.QuestMob;
+import fr.entasia.sbquests.utils.Quests;
 import fr.entasia.skycore.apis.BaseAPI;
 import fr.entasia.skycore.apis.BaseIsland;
-import fr.entasia.skycore.apis.CooManager;
 import fr.entasia.skycore.apis.SkyPlayer;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -25,24 +22,7 @@ import java.util.Map;
 
 public class InvsManager {
 
-	/*
-	if (e.player.getInventory().firstEmpty() == -1) {
-							int possible = 0;
-							for (Map.Entry<Integer, ? extends ItemStack> slot : e.player.getInventory().all(itemStack.getType()).entrySet()) {
-								if (slot.getValue().getDurability() == itemStack.getDurability()) { // ca passera pas les enchants etc...
-									possible += (64 - slot.getValue().getAmount());
-									if (possible >= itemStack.getAmount()) break;
-								}
-							}
-							if (possible < itemStack.getAmount()) {
-								e.player.sendMessage("§cPas assez de slots libres pour recevoir votre récompense !");
-								return;
-							}
-						}
-						p.getInventory().addItem(itemStack);
-	 */
-
-	public static MenuCreator questMenu = new MenuCreator(null, null) {
+	private static MenuCreator questMenu = new MenuCreator(null, null) {
 		@Override
 		public void onMenuClick(MenuClickEvent e) {
 			Player p = e.player;
@@ -58,10 +38,10 @@ public class InvsManager {
 					p.sendMessage("§cUne erreur est survenue ! (ID de quête invalide)");
 					return;
 				}
-				int i = -1;
+				int i = 0;
 				for (QuestItem qitem : current_quest.content.items) {
-					i++;
 					int needed = qitem.number - cs.getInt("items." + i);
+					i++;
 					if(needed==0)continue;
 
 					for (ItemStack item : p.getInventory().all(qitem.type).values()) {
@@ -80,7 +60,7 @@ public class InvsManager {
 					}
 					cs.set("items."+i, qitem.number-needed);
 				}
-				openQuestMenu(p);
+				openQuestMenu(is, p);
 			} else if (e.item.getType() == Material.STAINED_GLASS_PANE) {
 				long timestamp = cs.getLong("time");
 				if(timestamp==0){
@@ -138,26 +118,19 @@ public class InvsManager {
 		}
 	};
 
-	public static void openQuestMenu(Player p) {
+	protected static void openQuestMenu(BaseIsland is, Player p) {
 
 		// CODE DE CHECK DE QUETE
 
 		Quests current;
-		BaseIsland is = BaseAPI.getIsland(CooManager.getIslandID(p.getLocation()));
-		if(is==null){
-			p.sendMessage("§cUne erreur est survenue ! (No island)");
-			return;
-		}else if(is.getMember(p.getUniqueId())==null){
-			p.sendMessage("§cTu n'es pas membre de cette île !");
-		}
 
 		String id = is.isid.str();
 		ConfigurationSection cs = Main.main.getConfig().getConfigurationSection("quests." +id);
 		if(cs == null) {
-			current = Utils.createQuest(is, id);
+			current = Utils.createQuest(is);
 			cs = Main.main.getConfig().getConfigurationSection("quests." + id);
-		}else if (cs.getLong("time") < (System.currentTimeMillis() - (24 * 60 * 60 * 1000))) {
-			current = Utils.createQuest(is, id);
+		}else if (cs.getLong("time") < System.currentTimeMillis() - DAY) {
+			current = Utils.createQuest(is);
 		}else{
 			current = Quests.getByID(cs.getInt("id"));
 			if (current == null){
@@ -234,5 +207,7 @@ public class InvsManager {
 		p.openInventory(inv);
 		p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 3.5f, 1.1f);
 	}
+
+	public static final int DAY = 24 * 60 * 60 * 1000;
 
 }
